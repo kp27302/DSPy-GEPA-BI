@@ -497,14 +497,6 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-## 📞 Support
-
-- **Issues**: [GitHub Issues](https://github.com/yourusername/DsPy-GEPA-BI/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/DsPy-GEPA-BI/discussions)
-- **Email**: your.email@example.com
-
----
-
 ## 🎯 Roadmap
 
 ### v1.0 (Current) ✅
