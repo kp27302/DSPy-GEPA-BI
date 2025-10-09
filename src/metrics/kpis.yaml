@@ -1,0 +1,114 @@
+# Canonical KPI Specifications
+# Each KPI defines the business metric, calculation method, and validation rules
+
+kpis:
+  revenue:
+    name: "Revenue"
+    description: "Total revenue from all orders"
+    formula_nl: "Sum of quantity times price for all orders"
+    formula_sql: "SUM(quantity * price)"
+    grain: ["order_date", "region", "customer_segment", "product_category"]
+    aggregation: "SUM"
+    format: "currency"
+    tests:
+      - type: "not_null"
+      - type: "positive"
+      - type: "range"
+        min: 0
+        max: 100000000
+  
+  aov:
+    name: "Average Order Value"
+    description: "Average revenue per order"
+    formula_nl: "Total revenue divided by count of distinct orders"
+    formula_sql: "SUM(quantity * price) / COUNT(DISTINCT order_id)"
+    grain: ["order_date", "region"]
+    aggregation: "DERIVED"
+    format: "currency"
+    tests:
+      - type: "not_null"
+      - type: "positive"
+      - type: "range"
+        min: 0
+        max: 10000
+  
+  order_count:
+    name: "Order Count"
+    description: "Total number of orders"
+    formula_nl: "Count of distinct order IDs"
+    formula_sql: "COUNT(DISTINCT order_id)"
+    grain: ["order_date", "region"]
+    aggregation: "COUNT_DISTINCT"
+    format: "number"
+    tests:
+      - type: "not_null"
+      - type: "non_negative"
+  
+  customer_count:
+    name: "Customer Count"
+    description: "Number of unique customers"
+    formula_nl: "Count of distinct customer IDs with orders"
+    formula_sql: "COUNT(DISTINCT customer_id)"
+    grain: ["order_date", "region"]
+    aggregation: "COUNT_DISTINCT"
+    format: "number"
+    tests:
+      - type: "not_null"
+      - type: "non_negative"
+  
+  gross_profit:
+    name: "Gross Profit"
+    description: "Revenue minus cost of goods sold"
+    formula_nl: "Sum of (revenue minus cost) for all orders"
+    formula_sql: "SUM((quantity * price) - (quantity * cost))"
+    grain: ["order_date", "region", "product_category"]
+    aggregation: "SUM"
+    format: "currency"
+    tests:
+      - type: "not_null"
+  
+  profit_margin:
+    name: "Profit Margin"
+    description: "Gross profit as percentage of revenue"
+    formula_nl: "Gross profit divided by revenue"
+    formula_sql: "SUM((quantity * price) - (quantity * cost)) / NULLIF(SUM(quantity * price), 0)"
+    grain: ["order_date", "region"]
+    aggregation: "DERIVED"
+    format: "percentage"
+    tests:
+      - type: "range"
+        min: -1
+        max: 1
+  
+  revenue_per_customer:
+    name: "Revenue Per Customer"
+    description: "Average revenue per unique customer"
+    formula_nl: "Total revenue divided by count of unique customers"
+    formula_sql: "SUM(quantity * price) / COUNT(DISTINCT customer_id)"
+    grain: ["order_date", "region"]
+    aggregation: "DERIVED"
+    format: "currency"
+    tests:
+      - type: "positive"
+
+measures:
+  # Power BI / DAX measure templates
+  - name: "Total Revenue"
+    dax: "SUM(fact_orders[revenue])"
+    table: "fact_orders"
+    
+  - name: "Total Orders"
+    dax: "DISTINCTCOUNT(fact_orders[order_id])"
+    table: "fact_orders"
+    
+  - name: "Avg Order Value"
+    dax: "DIVIDE([Total Revenue], [Total Orders], 0)"
+    table: "fact_orders"
+    
+  - name: "YoY Revenue Growth"
+    dax: |
+      VAR CurrentRevenue = [Total Revenue]
+      VAR PriorYearRevenue = CALCULATE([Total Revenue], SAMEPERIODLASTYEAR(dim_date[Date]))
+      RETURN DIVIDE(CurrentRevenue - PriorYearRevenue, PriorYearRevenue, 0)
+    table: "fact_orders"
+

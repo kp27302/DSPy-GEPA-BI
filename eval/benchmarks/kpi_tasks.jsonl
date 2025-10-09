@@ -1,0 +1,6 @@
+{"id": "kpi_001", "kpi_name": "Revenue", "formula_nl": "Sum of quantity times price", "expected_properties": ["not_null", "positive"], "gold_measure": "SUM(quantity * price)"}
+{"id": "kpi_002", "kpi_name": "AOV", "formula_nl": "Average order value - total revenue divided by order count", "expected_properties": ["positive"], "gold_measure": "SUM(quantity * price) / COUNT(DISTINCT order_id)"}
+{"id": "kpi_003", "kpi_name": "CustomerCount", "formula_nl": "Count of unique customers", "expected_properties": ["not_null", "positive"], "gold_measure": "COUNT(DISTINCT customer_id)"}
+{"id": "kpi_004", "kpi_name": "GrossProfit", "formula_nl": "Revenue minus cost", "expected_properties": ["not_null"], "gold_measure": "SUM((quantity * price) - (quantity * cost))"}
+{"id": "kpi_005", "kpi_name": "ProfitMargin", "formula_nl": "Gross profit divided by revenue", "expected_properties": ["range"], "gold_measure": "SUM((quantity * price) - (quantity * cost)) / NULLIF(SUM(quantity * price), 0)"}
+
