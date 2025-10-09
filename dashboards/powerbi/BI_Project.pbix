@@ -1,0 +1,8 @@
+# This is a placeholder file
+# Replace with your actual Power BI .pbix file
+# To create:
+# 1. Open Power BI Desktop
+# 2. Connect to data/warehouse/*.parquet files
+# 3. Create visualizations
+# 4. Save as BI_Project.pbix
+
