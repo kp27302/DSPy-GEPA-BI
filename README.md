@@ -465,23 +465,6 @@ flake8 src/
 mypy src/
 ```
 
----
-
-## 📚 Citation
-
-If you use this work in research, please cite:
-
-```bibtex
-@misc{dspy-gepa-bi,
-  title={DSPy-GEPA-BI: Multi-Objective LLM Optimization for Business Intelligence},
-  author={Your Name},
-  year={2025},
-  url={https://github.com/yourusername/DsPy-GEPA-BI}
-}
-```
-
----
-
 ## 📜 License
 
 MIT License - see [LICENSE](LICENSE) file for details.
