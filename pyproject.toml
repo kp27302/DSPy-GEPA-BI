@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bi-dspy-gepa"
+version = "0.1.0"
+description = "Business Intelligence with DSPy agentic workflows and GEPA prompt optimization"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "BI-DSPy-GEPA Team"}
+]
+dependencies = [
+    "dspy-ai>=2.4.0",
+    "duckdb>=0.10.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0.0",
+    "sqlglot>=20.0.0",
+    "pyarrow>=14.0.0",
+    "scikit-learn>=1.3.0",
+    "tqdm>=4.66.0",
+    "rich>=13.0.0",
+    "tenacity>=8.2.0",
+    "orjson>=3.9.0",
+    "streamlit>=1.30.0",
+    "matplotlib>=3.7.0",
+    "seaborn>=0.13.0",
+    "plotly>=5.18.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.5.0",
+]
+notebook = [
+    "jupyter>=1.0.0",
+    "ipykernel>=6.25.0",
+]
+
+[project.scripts]
+bi-etl = "src.scripts.run_etl:main"
+bi-eval = "src.scripts.eval_sql:main"
+bi-gepa = "src.scripts.run_gepa_search:main"
+bi-gepa-real = "src.scripts.run_real_gepa:main"
+bi-compare = "src.scripts.compare_baselines:run_comparative_experiments"
+bi-app = "src.scripts.run_app:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.black]
+line-length = 100
+target-version = ['py310']
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+

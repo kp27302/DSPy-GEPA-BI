@@ -1,0 +1,100 @@
+project:
+  name: "BI-DSPy-GEPA"
+  warehouse_path: "data/warehouse/bi.duckdb"
+  datasets:
+    - "data/raw/orders.csv"
+    - "data/raw/customers.csv"
+    - "data/raw/products.csv"
+  
+schema:
+  orders:
+    columns:
+      - {name: order_id, type: INTEGER, pk: true}
+      - {name: order_date, type: DATE}
+      - {name: customer_id, type: INTEGER, fk: customers.customer_id}
+      - {name: product_id, type: INTEGER, fk: products.product_id}
+      - {name: quantity, type: INTEGER}
+      - {name: price, type: DOUBLE}
+      - {name: region, type: VARCHAR}
+  
+  customers:
+    columns:
+      - {name: customer_id, type: INTEGER, pk: true}
+      - {name: customer_name, type: VARCHAR}
+      - {name: segment, type: VARCHAR}
+      - {name: state, type: VARCHAR}
+      - {name: signup_date, type: DATE}
+  
+  products:
+    columns:
+      - {name: product_id, type: INTEGER, pk: true}
+      - {name: product_name, type: VARCHAR}
+      - {name: category, type: VARCHAR}
+      - {name: cost, type: DOUBLE}
+
+kpis:
+  - name: "Revenue"
+    formula_nl: "sum(quantity * price) over selected date range"
+    grain: "order_date"
+    aggregation: "SUM"
+    
+  - name: "AOV"
+    formula_nl: "revenue divided by count of distinct orders"
+    grain: "order_date"
+    aggregation: "DERIVED"
+    
+  - name: "CustomerCount"
+    formula_nl: "count distinct customers with orders"
+    grain: "order_date"
+    aggregation: "COUNT_DISTINCT"
+    
+  - name: "OrderCount"
+    formula_nl: "total number of orders"
+    grain: "order_date"
+    aggregation: "COUNT"
+
+gepa:
+  population: 16
+  generations: 8
+  pareto_weights:
+    accuracy: 0.6
+    tests: 0.2
+    cost: 0.1
+    latency: 0.1
+  
+  budget:
+    max_tokens_per_trial: 12000
+    max_trials: 150
+    timeout_seconds: 300
+  
+  mutations:
+    - swap_fewshot
+    - tighten_schema_constraints
+    - add_guardrails
+    - operator_hint_join_keys
+    - simplify_instructions
+    - add_examples
+  
+  mutation_rates:
+    swap_fewshot: 0.3
+    tighten_schema_constraints: 0.2
+    add_guardrails: 0.15
+    operator_hint_join_keys: 0.15
+    simplify_instructions: 0.1
+    add_examples: 0.1
+
+providers:
+  model: "openai/gpt-4o-mini"
+  temperature: 0.1
+  max_tokens: 4096
+  
+validation:
+  max_scan_rows: 1000000
+  min_coverage_pct: 90
+  enable_dry_run: true
+  quote_identifiers: true
+  
+export:
+  powerbi_path: "dashboards/powerbi/BI_Project.pbix"
+  export_formats: ["csv", "parquet", "json"]
+

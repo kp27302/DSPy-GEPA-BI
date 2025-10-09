@@ -1,0 +1,80 @@
+evaluation:
+  objectives:
+    accuracy:
+      weight: 0.6
+      metric: "execution_match"
+      tolerance: 0.01
+      description: "SQL execution result correctness"
+    
+    tests:
+      weight: 0.2
+      metric: "test_pass_rate"
+      description: "Data quality and validation tests"
+    
+    cost:
+      weight: 0.1
+      metric: "token_cost"
+      normalize: true
+      inverse: true
+      description: "LLM token usage cost"
+    
+    latency:
+      weight: 0.1
+      metric: "wall_time"
+      normalize: true
+      inverse: true
+      description: "End-to-end execution time"
+  
+  scoring:
+    execution_match:
+      method: "set_equiv"
+      ignore_order: true
+      float_tolerance: 0.001
+      null_equal: true
+    
+    static_checks:
+      enabled: true
+      rules:
+        - no_select_star
+        - no_cross_join_without_filter
+        - no_full_table_scan_large
+        - prefer_inner_join
+        - quote_identifiers
+    
+    cost_budget:
+      max_tokens_per_query: 4000
+      max_total_tokens: 500000
+      alert_threshold: 0.8
+    
+    latency_budget:
+      max_seconds_per_query: 30
+      max_total_seconds: 600
+      alert_threshold: 0.8
+
+benchmarks:
+  sql_tasks: "eval/benchmarks/sql_tasks.jsonl"
+  kpi_tasks: "eval/benchmarks/kpi_tasks.jsonl"
+  
+  split:
+    train: 0.7
+    val: 0.15
+    test: 0.15
+  
+  seed: 42
+
+reporting:
+  output_dir: "eval/results"
+  formats: ["json", "html", "csv"]
+  visualizations:
+    - pareto_frontier
+    - accuracy_vs_cost
+    - latency_distribution
+    - error_taxonomy
+  
+  comparison:
+    baseline: "naive_zero_shot"
+    methods:
+      - gepa_optimized
+      - few_shot_manual
+      - chain_of_thought
+
